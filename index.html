@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bus Allergy Quick Quiz</title>
+<style>
+:root{--w:720px}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial,sans-serif;margin:0;background:#f7f7f8;color:#111}
+main{max-width:var(--w);margin:24px auto;padding:24px;background:#fff;border-radius:16px;box-shadow:0 2px 20px rgba(0,0,0,.06)}
+h1{font-size:28px;margin:0 0 8px}
+p#intro{margin:0 0 16px;font-size:14px;color:#444}
+button{border:0;padding:12px 16px;border-radius:10px;cursor:pointer;font-weight:600}
+button.primary{background:#0ea5e9;color:#fff}
+button.secondary{background:#e5e7eb}
+fieldset{border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin:14px 0}
+legend{padding:0 6px;font-weight:700}
+label{display:block;padding:8px 10px;border-radius:8px}
+label:hover{background:#f3f4f6}
+.result{padding:16px;border-radius:12px;background:#ecfeff;margin-top:16px}
+.score{font-weight:800;font-size:18px}
+.grid{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+.small{font-size:12px;color:#666}
+footer{max-width:var(--w);margin:0 auto 24px;text-align:center;color:#666;font-size:12px}
+.bad{background:#fff1f2;border:1px solid #fecdd3}
+.good{background:#ecfdf5;border:1px solid #bbf7d0}
+hr{border:0;border-top:1px solid #eee;margin:16px 0}
+@media (max-width:760px){main{margin:0;border-radius:0;box-shadow:none}}
+</style>
+</head>
+<body>
+<main>
+<h1>Allergic Reaction on the Bus</h1>
+<p id="intro">7 questions. One try. You get your score plus what to fix. Tap Submit when done.</p>
+<form id="quiz"></form>
+<div class="grid">
+<button class="primary" id="submitBtn" type="button">Submit</button>
+<button class="secondary" id="resetBtn" type="button">Reset</button>
+</div>
+<div id="result"></div>
+<hr>
+<div class="small">Training aid only. Follow your district policy, student care plans, and state law.</div>
+</main>
+<footer>© Bus Emergency Mini‑Lesson</footer>
+<script>
+const questions=[
+{q:"First action when you suspect anaphylactic shock on your bus (PUB 52)?",a:["Wait to see if it gets worse","Call your dispatcher and report the situation","Drive faster to school","Give food or drink"],c:1,why:"PUB 52 says to call your dispatcher and report the situation immediately."},
+{q:"Who do you call next, and what do you request?",a:["Parent only","School office only","Call 911 and request an Advanced Life Support unit","No one, continue route"],c:2,why:"PUB 52: call 911 immediately and request an Advanced Life Support unit."},
+{q:"According to district procedures and your training, what may drivers be allowed to do?",a:["Give antihistamines","Administer epinephrine using an autoinjector","Offer water","Let the student sleep"],c:1,why:"PUB 52 permits trained drivers to administer epinephrine if allowed by procedures and guidelines."},
+{q:"Which prevention practice does PUB 52 highlight for food‑allergic students?",a:["Candy rewards on the bus","No food on the bus policy","Allow snacks if seated in back","Serve juice during long rides"],c:1,why:"PUB 52 recommends enforcing a no food on the bus policy."},
+{q:"Seat placement guidance mentioned in PUB 52",a:["Far from the driver","Near the driver","By the rear door","Any seat is fine"],c:1,why:"PUB 52 suggests having the food‑allergic child sit near the driver."},
+{q:"Which is a listed sign/symptom?",a:["Itching and red, raised blotchy skin (hives)","Ear ringing","Back pain only","Sneezing once"],c:0,why:"PUB 52 lists itching and hives among the signs of anaphylaxis."},
+{q:"Which breathing sign shows severe distress per PUB 52?",a:["Able to speak in full sentences","Unable to speak more than one or two words","Quiet, comfortable breathing","Singing along to music"],c:1,why:"PUB 52 notes inability to speak more than one or two words as a danger sign."}
+]
+const quiz=document.getElementById("quiz")
+const result=document.getElementById("result")
+function render(){quiz.innerHTML="";questions.forEach((x,i)=>{const fs=document.createElement("fieldset");const lg=document.createElement("legend");lg.textContent=`Q${i+1}`;fs.appendChild(lg);const p=document.createElement("p");p.textContent=x.q;fs.appendChild(p);x.a.forEach((opt,j)=>{const id=`q${i}_${j}`;const lab=document.createElement("label");const r=document.createElement("input");r.type="radio";r.name=`q${i}`;r.value=j;r.id=id;lab.appendChild(r);const t=document.createTextNode(" "+opt);lab.appendChild(t);fs.appendChild(lab)});quiz.appendChild(fs)})}
+function score(){let s=0;let misses=[];questions.forEach((x,i)=>{const picked=[...document.querySelectorAll(`input[name=q${i}]:checked`)].map(r=>parseInt(r.value))[0];if(picked===x.c){s++}else{misses.push({i,correct:x.a[x.c],why:x.why})}});const pct=Math.round((s/questions.length)*100);const box=document.createElement("div");box.className=`result ${pct>=80?"good":"bad"}`;box.innerHTML=`<div class="score">${s}/${questions.length} correct (${pct}%)</div>`;if(misses.length){const ul=document.createElement("div");ul.innerHTML=misses.map(m=>`<p><strong>Q${m.i+1}</strong>: ${m.why} Correct: ${m.correct}</p>`).join("");box.appendChild(ul)}else{const p=document.createElement("p");p.textContent="Perfect. Nice work.";box.appendChild(p)};result.innerHTML="";result.appendChild(box)}
+render()
+document.getElementById("submitBtn").addEventListener("click",score)
+document.getElementById("resetBtn").addEventListener("click",()=>{render();result.innerHTML=""})
+</script>
+</body>
+</html>
